@@ -15,9 +15,28 @@ function clearEverything() {
     });
 }
 
+
+
+function getDecimal(value, nowId) {
+    let base = 10;
+    if(nowId=='binary') base = 2;
+    else if(nowId=='octal') base = 8;
+    else if(nowId='hexaDecimal') base = 16;
+    return getDecimalFromBase(value,base);
+}
+
 function convert(e) {
     let value = e.target.value;
-    if(value=="") clearEverything();
+    if(value=="") {
+        clearEverything();
+        return;
+    }
+    let nowId = e.target.id;
+    if(invalidInput(value,nowId)) {
+        console.log("Invalid Input");
+        return;
+    }
+    let decimalValue = getDecimal(value,nowId);
 }
 
 allInputs.forEach(el => {
