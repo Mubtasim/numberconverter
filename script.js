@@ -39,10 +39,12 @@ function isOkDigit(digit, base) {
     let codea = "a".charCodeAt(0);
     let codef = "f".charCodeAt(0);
     let codeDigit = digit[0].charCodeAt(0);
+    if(base<=10 && ((codeDigit>=codeA && codeDigit<=codeF) || (codeDigit>=codea && codeDigit<=codef))) {
+        return false;
+    }
     if(codeDigit>=codeZero && codeDigit<=codeNine) {
         return digit<base;
     } else if(!((codeDigit>=codeA && codeDigit<=codeF) || (codeDigit>=codea && codeDigit<=codef))) {
-        console.log("I am here");
         return false;
     }
     return true;
