@@ -23,8 +23,53 @@ function baseOfId(nowId) {
     return base;
 }
 
-function getDecimalFromBase(value, base) {
+function getDotIdx(value) {
+    let dotAt = -1;
+    for(let i = 0; i < value.length; i++) {
+        if(value[i]=='.') dotAt = i;
+    }
+    return dotAt;
+}
 
+function myPow(base, power) {
+    let ret = 1;
+    for(let i = 0; i < power; i++) ret *= base;
+    return ret;
+}
+
+function wholeValue(value, base) {
+    let codeZero = "0".charCodeAt(0);
+    let codeNine = "9".charCodeAt(0);
+    let codeA = "A".charCodeAt(0);
+    let codeF = "F".charCodeAt(0);
+    let codea = "a".charCodeAt(0);
+    let codef = "f".charCodeAt(0);
+    let ret = 0;
+    let power = 0;
+    for(let i = value.length-1; i >= 0; i--) {
+        let nowDigit = -1;
+        let codeDigit = value.charCodeAt(i);
+        if(codeDigit>=codea && codeDigit<=codef) nowDigit = codeDigit-codea+10;
+        else if(codeDigit>=codeA && codeDigit<=codeF) nowDigit = codeDigit-codeA+10;
+        else nowDigit = codeDigit - codeZero;
+        ret += nowDigit*myPow(base,power);
+        power++;
+    }
+    return ret;
+}
+
+function getDecimalFromBase(value, base) {
+    if(base==10) return value;
+    let dotAt = getDotIdx(value);
+    if(dotAt==-1) {
+        return wholeValue(value,base);
+    }
+    if(dotAt==0) {
+        return fracValue(value.substring(1,value.length),base);
+    }
+    let wholePart = value.substring(0,dotAt);
+    let fracPart = value.substring(dotAt+1,value.length);
+    return wholeValue(wholePart,base) + fracValue(fracPart,base);
 }
 
 function getDecimal(value, base) {
@@ -69,12 +114,55 @@ function invalidInput(value, base) {
     return !isOkEveryDigit(value,base);
 }
 
-function decimalToBase(decimalValue, base) {
+function reverse(str) {
+    let ret = "";
+    for(let i = str.length-1; i >= 0; i--) {
+        ret += str[i];
+    }
+    return ret;
+}
 
+function valueOfRemainder(value) {
+    let hexs = ['A','B','C','D','E','F'];
+    if(value>9) return hexs[value-10];
+    return value.toString();
+}
+
+function decimalToBaseWhole(value, base) {
+    let ret = "";
+    value = parseInt(value);
+    while(value>0) {
+        let remainder = value%base;
+        ret += valueOfRemainder(remainder);
+        value /= base;
+        value = Math.floor(value);
+    }
+    let reverseStr = reverse(ret);
+    console.log(reverseStr,base);
+    if(reverseStr=="") return "0";
+    return reverseStr;
+}
+
+function decimalToBaseFrac(value, base) {
+    return "";
+}
+
+function decimalToBase(decimalValue, base) {
+    let dotAt = getDotIdx(decimalValue);
+    if(dotAt==-1) return decimalToBaseWhole(decimalValue,base);
+    if(dotAt==0) return decimalToBaseFrac(decimalValue.substring(1,decimalValue.length),base);
+    let wholePart = decimalValue.substring(0,dotAt);
+    let fracPart = decimalValue.substring(dotAt+1,decimalValue.length);
+    let wholeValue = decimalToBaseWhole(wholePart,base);
+    let fracValue = decimalToBaseFrac(fracPart,base);
+    console.log(wholeValue,base);
+    return wholeValue + "." + fracValue;
 }
 
 function setVals(allVals,allInputs) {
-
+    for(let i = 0; i < 4; i++) {
+        allInputs[i].value = allVals[i];
+    }
 }
 
 function convert(e) {
@@ -89,7 +177,12 @@ function convert(e) {
         console.log("Invalid Input");
         return;
     }
-    let decimalValue = getDecimal(value,nowId);
+    let dotAt = getDotIdx(value);
+    if(dotAt==value.length-1) {
+        return;
+    }
+    let decimalValue = getDecimal(value,base);
+    console.log("The decimal value is: " + decimalValue);
     let allVals = [];
     allVals[0] = decimalValue;
     allVals[1] = decimalToBase(decimalValue,2);
