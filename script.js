@@ -2,6 +2,7 @@ const decimalInp = document.getElementById('decimal');
 const binaryInp = document.getElementById('binary');
 const octalInp = document.getElementById('octal');
 const hexaInp = document.getElementById('hexaDecimal');
+const error = document.getElementById('error');
 
 const allInputs = [];
 allInputs[0] = decimalInp;
@@ -13,6 +14,7 @@ function clearEverything() {
     allInputs.forEach(el => {
         el.value = "";
     });
+    error.innerHTML = "";
 }
 
 function baseOfId(nowId) {
@@ -224,8 +226,11 @@ function convert(e) {
     base = baseOfId(nowId);
     if(invalidInput(value,base)) {
         console.log("Invalid Input");
+        error.innerHTML = "Invalid Input";
         return;
     }
+    // console.log("noterror");
+    error.innerHTML = "";
     let dotAt = getDotIdx(value);
     if(dotAt==value.length-1) {
         return;
